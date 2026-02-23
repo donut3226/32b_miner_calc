@@ -1,0 +1,106 @@
+{
+  "categories": [
+    {
+      "name": "Bitaxe (Open Source)",
+      "miners": [
+        {
+          "id": "bitaxe-gamma",
+          "name": "Bitaxe Gamma",
+          "hashrate_th": 1.2,
+          "power_w": 15,
+          "notes": "Most popular open-source ASIC miner — hashrate may vary by firmware/chip"
+        },
+        {
+          "id": "bitaxe-ultra",
+          "name": "Bitaxe Ultra",
+          "hashrate_th": 0.5,
+          "power_w": 5
+        },
+        {
+          "id": "bitaxe-hex",
+          "name": "Bitaxe Hex",
+          "hashrate_th": 3.0,
+          "power_w": 35
+        },
+        {
+          "id": "bitaxe-supra",
+          "name": "Bitaxe Supra",
+          "hashrate_th": 0.6,
+          "power_w": 8
+        }
+      ]
+    },
+    {
+      "name": "NerdMiner / NerdAxe",
+      "miners": [
+        {
+          "id": "nerdaxe",
+          "name": "NerdAxe",
+          "hashrate_th": 0.6,
+          "power_w": 10
+        }
+      ]
+    },
+    {
+      "name": "Canaan Avalon",
+      "miners": [
+        {
+          "id": "avalon-nano-3",
+          "name": "Avalon Nano 3",
+          "hashrate_th": 4.0,
+          "power_w": 140,
+          "notes": "Specs need verification"
+        },
+        {
+          "id": "avalon-nano-3s",
+          "name": "Avalon Nano 3S",
+          "hashrate_th": 6.0,
+          "power_w": 200,
+          "notes": "Specs need verification"
+        },
+        {
+          "id": "avalon-mini",
+          "name": "Avalon Mini",
+          "hashrate_th": 37.5,
+          "power_w": 2200,
+          "notes": "Specs need verification — confirm model name"
+        }
+      ]
+    },
+    {
+      "name": "Industrial (Comparison)",
+      "miners": [
+        {
+          "id": "antminer-s21-pro",
+          "name": "Antminer S21 Pro",
+          "hashrate_th": 234,
+          "power_w": 3510
+        },
+        {
+          "id": "antminer-s21",
+          "name": "Antminer S21",
+          "hashrate_th": 200,
+          "power_w": 3500
+        },
+        {
+          "id": "antminer-s19j-pro",
+          "name": "Antminer S19j Pro",
+          "hashrate_th": 104,
+          "power_w": 3068,
+          "notes": "Older gen, common secondhand"
+        }
+      ]
+    },
+    {
+      "name": "Custom",
+      "miners": [
+        {
+          "id": "custom",
+          "name": "Enter my own specs",
+          "hashrate_th": null,
+          "power_w": null
+        }
+      ]
+    }
+  ]
+}
