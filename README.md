@@ -1,8 +1,10 @@
 # Home Miner Rewards Calculator
 
-A client-side Bitcoin mining calculator built for [32Bitcoins](https://32bitcoins.com) — an educational site focused on open-source Bitcoin mining hardware.
+A client-side Bitcoin mining calculator built for [32Bitcoins](https://32bitcoins.com) — an educational site dedicated to open-source Bitcoin mining hardware and the home miners running it.
 
-The goal is to help newcomers and hobbyist miners understand the real economics of home mining: what you actually earn in sats, what it costs to run, how long to break even, and what the solo block odds look like. No fluff, no sign-ups, no backend.
+Home mining is the heart and soul of the Bitcoin network. Every small miner running from a bedroom, garage, or home office contributes to decentralisation — keeping the network distributed, censorship-resistant, and true to what Bitcoin was designed to be. This tool exists to give home miners clear, honest visibility into their contribution: the sats they earn, the costs they carry, and the role they play in securing the network.
+
+No fluff, no sign-ups, no backend.
 
 ## Live
 
@@ -15,7 +17,7 @@ Embedded at [32bitcoins.com](https://32bitcoins.com) or directly at:
 - Calculates daily/monthly/yearly sats, revenue, and electricity costs
 - Breakeven analysis accounting for difficulty growth over time
 - Hodl scenarios, mining vs buying comparison, sensitivity table
-- Solo block probability — framed honestly as a lottery ticket
+- Solo block probability — because every home miner has a real chance
 - Pre-loaded hardware profiles for popular home miners (Bitaxe, NerdAxe, Avalon, and industrial rigs for comparison)
 
 ## Built with
