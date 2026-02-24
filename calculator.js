@@ -17,6 +17,9 @@ const FALLBACK_BTC_PRICE_AUD = 150000;
 const FALLBACK_BTC_PRICE_USD = 95000;
 const FALLBACK_DIFFICULTY    = 113757508067674;
 
+// Hashrate unit → TH/s multipliers
+const UNIT_TO_TH = { KH: 1e-9, MH: 1e-6, GH: 1e-3, TH: 1, PH: 1e3, EH: 1e6 };
+
 // ============================================================
 // Pure calculation functions
 // ============================================================
@@ -172,6 +175,12 @@ function fmtSats(n) {
   return `${Math.round(n).toLocaleString()} sats`;
 }
 
+function fmtBTC(n) {
+  if (n <= 0) return '0 BTC';
+  if (n < 0.00000001) return '< 0.00000001 BTC';
+  return `${n.toFixed(8)} BTC`;
+}
+
 function fmtAUD(n) {
   const abs = Math.abs(n);
   if (abs < 0.005) return 'A$0.00';
@@ -250,7 +259,7 @@ function initMinerSelect() {
 
 function readInputs() {
   return {
-    hashrate:         parseFloat($('hashrate').value)          || 0,
+    hashrate:         (parseFloat($('hashrate').value) || 0) * (UNIT_TO_TH[$('hashrate-unit') ? $('hashrate-unit').value : 'TH'] || 1),
     power:            parseFloat($('power').value)             || 0,
     hardwareCost:     parseFloat($('hardware-cost').value)     || 0,
     resaleValue:      parseFloat($('resale-value').value)      || 0,
@@ -352,6 +361,71 @@ function renderNetCell(id, value) {
   if (!el) return;
   el.textContent = fmtAUD(value);
   el.className   = value >= 0 ? 'positive' : 'negative';
+}
+
+// ============================================================
+// Simple mode calculate
+// ============================================================
+
+function calculateSimple() {
+  const SIMPLE_UPTIME   = 95;
+  const SIMPLE_POOL_FEE = 1;
+
+  const hashrateRaw = parseFloat($('simple-hashrate').value) || 0;
+  const unit        = $('simple-hashrate-unit').value;
+  const hashrate_TH = hashrateRaw * (UNIT_TO_TH[unit] || 1);
+  const power_W     = parseFloat($('simple-power').value) || 0;
+  const powerCost   = parseFloat($('simple-power-cost').value) || 0;
+  const currency    = $('simple-currency').value;
+
+  if (hashrateRaw <= 0) { alert('Enter a hashrate greater than 0.'); return; }
+  if (power_W <= 0)     { alert('Enter power consumption greater than 0 watts.'); return; }
+  if (powerCost <= 0)   { alert('Enter your electricity cost per kWh.'); return; }
+
+  const btcPriceAUD = parseFloat($('btc-price-aud').value) || FALLBACK_BTC_PRICE_AUD;
+  const btcPriceUSD = parseFloat($('btc-price-usd').value) || FALLBACK_BTC_PRICE_USD;
+  const difficulty  = parseFloat($('network-difficulty').value) || FALLBACK_DIFFICULTY;
+  const btcPrice    = currency === 'AUD' ? btcPriceAUD : btcPriceUSD;
+  const fmtFiat     = currency === 'AUD' ? fmtAUD : fmtUSD;
+
+  // Core figures
+  const btcPerDay  = dailyBTC(hashrate_TH, SIMPLE_UPTIME, difficulty, SIMPLE_POOL_FEE);
+  const satsPerDay = btcToSats(btcPerDay);
+  const elecPerDay = dailyElectricityCost(power_W, SIMPLE_UPTIME, powerCost);
+
+  // Electricity expressed in BTC/sats
+  const elecBTC  = btcPrice > 0 ? elecPerDay / btcPrice : 0;
+  const elecSats = btcToSats(elecBTC);
+
+  // Profit
+  const profitBTC  = btcPerDay - elecBTC;
+  const profitSats = btcToSats(profitBTC);
+  const profitFiat = btcPerDay * btcPrice - elecPerDay;
+
+  // Render income
+  setText('simple-income-sats', fmtSats(satsPerDay));
+  setText('simple-income-btc',  fmtBTC(btcPerDay));
+  setText('simple-income-fiat', fmtFiat(btcPerDay * btcPrice));
+
+  // Render electricity
+  setText('simple-elec-sats', fmtSats(elecSats));
+  setText('simple-elec-btc',  fmtBTC(elecBTC));
+  setText('simple-elec-fiat', fmtFiat(elecPerDay));
+
+  // Render profit (coloured)
+  const profitSatsEl = $('simple-profit-sats');
+  const profitFiatEl = $('simple-profit-fiat');
+  if (profitSatsEl) {
+    profitSatsEl.textContent = fmtSats(profitSats);
+    profitSatsEl.className   = 'simple-stat-primary ' + (profitSats >= 0 ? 'positive' : 'negative');
+  }
+  setText('simple-profit-btc', fmtBTC(Math.abs(profitBTC)));
+  if (profitFiatEl) {
+    profitFiatEl.textContent = fmtFiat(profitFiat);
+    profitFiatEl.className   = 'simple-stat-fiat ' + (profitFiat >= 0 ? 'positive' : 'negative');
+  }
+
+  $('simple-results').classList.remove('hidden');
 }
 
 // ============================================================
@@ -494,12 +568,45 @@ function loadLiveDataPlaceholders() {
 }
 
 // ============================================================
+// Calc mode toggle (Simple / Full)
+// ============================================================
+
+function initCalcModeToggle() {
+  const toggle = $('calc-mode-toggle');
+  if (!toggle) return;
+
+  toggle.addEventListener('click', e => {
+    const btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+
+    toggle.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const simple = btn.dataset.mode === 'simple';
+
+    $('full-inputs').classList.toggle('hidden', simple);
+    $('simple-inputs').classList.toggle('hidden', !simple);
+    $('results').classList.add('hidden');
+    $('simple-results').classList.add('hidden');
+  });
+}
+
+// ============================================================
 // Calculate button
 // ============================================================
 
 function initCalculateButton() {
   const btn = $('btn-calculate');
-  if (btn) btn.addEventListener('click', calculate);
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const activeMode = $('calc-mode-toggle').querySelector('.toggle-btn.active');
+    const mode = activeMode ? activeMode.dataset.mode : 'full';
+    if (mode === 'simple') {
+      calculateSimple();
+    } else {
+      calculate();
+    }
+  });
 }
 
 // ============================================================
@@ -583,6 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLiveDataPlaceholders();
   initMinerSelect();
   initToggle();
+  initCalcModeToggle();
   initCalculateButton();
   initTooltips();
 });

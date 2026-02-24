@@ -16,7 +16,63 @@
 
     <!-- ===================== INPUTS ===================== -->
     <section class="card inputs-card">
+
+      <div class="calc-mode-row">
+        <div class="toggle-group" id="calc-mode-toggle">
+          <button class="toggle-btn" data-mode="simple">Simple</button>
+          <button class="toggle-btn active" data-mode="full">Full</button>
+        </div>
+      </div>
+
       <h2>Your Setup</h2>
+
+      <!-- Simple mode inputs -->
+      <div id="simple-inputs" class="hidden">
+
+        <div class="field-group">
+          <label for="simple-hashrate">
+            Hashrate
+            <button class="info-btn" type="button" data-tooltip="How fast your miner works. Select the unit that matches your hardware — home miners are typically in GH/s or TH/s.">i</button>
+          </label>
+          <div class="input-with-unit">
+            <input type="number" id="simple-hashrate" min="0" step="0.1" placeholder="e.g. 1.2">
+            <select id="simple-hashrate-unit">
+              <option value="KH">kH/s</option>
+              <option value="MH">MH/s</option>
+              <option value="GH">GH/s</option>
+              <option value="TH" selected>TH/s</option>
+              <option value="PH">PH/s</option>
+              <option value="EH">EH/s</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="simple-power">
+            Power consumption (W)
+            <button class="info-btn" type="button" data-tooltip="How many watts your miner draws at the wall. Check the spec sheet or measure it with a power meter.">i</button>
+          </label>
+          <input type="number" id="simple-power" min="0" step="1" placeholder="e.g. 15">
+        </div>
+
+        <div class="field-group">
+          <label for="simple-power-cost">
+            Electricity cost
+            <button class="info-btn" type="button" data-tooltip="Your electricity rate per kilowatt-hour. Select your currency — Australian average is around $0.28–$0.35 AUD/kWh.">i</button>
+          </label>
+          <div class="input-with-unit">
+            <input type="number" id="simple-power-cost" min="0" step="0.01" placeholder="e.g. 0.28">
+            <select id="simple-currency">
+              <option value="AUD">AUD/kWh</option>
+              <option value="USD">USD/kWh</option>
+            </select>
+          </div>
+        </div>
+
+      </div><!-- /#simple-inputs -->
+
+      <!-- Full mode inputs -->
+      <div id="full-inputs">
 
       <div class="field-group">
         <label for="miner-select">
@@ -31,10 +87,20 @@
       <div class="field-row">
         <div class="field-group">
           <label for="hashrate">
-            Hashrate (TH/s)
-            <button class="info-btn" type="button" data-tooltip="How fast your miner searches for a valid Bitcoin block, measured in terahashes per second. 1 TH/s = 1 trillion calculations per second. Higher hashrate = more sats earned per day.">i</button>
+            Hashrate
+            <button class="info-btn" type="button" data-tooltip="How fast your miner searches for a valid Bitcoin block. Select the unit that matches your hardware — home miners are typically in GH/s or TH/s. Higher hashrate = more sats earned per day.">i</button>
           </label>
-          <input type="number" id="hashrate" min="0" step="0.1" placeholder="e.g. 1.2">
+          <div class="input-with-unit">
+            <input type="number" id="hashrate" min="0" step="0.1" placeholder="e.g. 1.2">
+            <select id="hashrate-unit">
+              <option value="KH">kH/s</option>
+              <option value="MH">MH/s</option>
+              <option value="GH">GH/s</option>
+              <option value="TH" selected>TH/s</option>
+              <option value="PH">PH/s</option>
+              <option value="EH">EH/s</option>
+            </select>
+          </div>
         </div>
         <div class="field-group">
           <label for="power">
@@ -125,7 +191,39 @@
 
       <p class="live-data-note" id="live-data-status">Fetching live data…</p>
 
+      </div><!-- /#full-inputs -->
+
       <button class="btn-calculate" id="btn-calculate">Calculate</button>
+
+      <!-- Simple mode results -->
+      <div id="simple-results" class="simple-results hidden">
+        <div class="simple-stat-grid">
+
+          <div class="simple-stat">
+            <div class="simple-stat-label">Income <span class="simple-period">/ day</span></div>
+            <div class="simple-stat-primary" id="simple-income-sats">—</div>
+            <div class="simple-stat-secondary" id="simple-income-btc">—</div>
+            <div class="simple-stat-fiat" id="simple-income-fiat">—</div>
+          </div>
+
+          <div class="simple-stat">
+            <div class="simple-stat-label">Electricity <span class="simple-period">/ day</span></div>
+            <div class="simple-stat-primary" id="simple-elec-sats">—</div>
+            <div class="simple-stat-secondary" id="simple-elec-btc">—</div>
+            <div class="simple-stat-fiat" id="simple-elec-fiat">—</div>
+          </div>
+
+          <div class="simple-stat">
+            <div class="simple-stat-label">Profit <span class="simple-period">/ day</span></div>
+            <div class="simple-stat-primary" id="simple-profit-sats">—</div>
+            <div class="simple-stat-secondary" id="simple-profit-btc">—</div>
+            <div class="simple-stat-fiat" id="simple-profit-fiat">—</div>
+          </div>
+
+        </div>
+        <p class="simple-disclaimer">Uses live BTC price. Assumes 95% uptime, 1% pool fee.</p>
+      </div><!-- /#simple-results -->
+
     </section>
 
     <!-- ===================== OUTPUTS ===================== -->
